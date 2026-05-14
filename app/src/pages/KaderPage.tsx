@@ -1,11 +1,20 @@
 import { useState, useMemo } from 'react';
 import { Plus, Search, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import type { Player, PositionGroup } from '../types';
 import { positionToGroup, positionGroupOrder } from '../types';
 import { addPlayer, updatePlayer, deletePlayer } from '../store';
 import PlayerCard from '../components/PlayerCard';
 import AddPlayerModal from '../components/AddPlayerModal';
 import PlayerDetail from '../components/PlayerDetail';
+import {
+  springSnappy,
+  staggerContainer,
+  staggerItem,
+  sectionHeader,
+  fadeUp,
+  pageSlideRight,
+} from '../lib/motion';
 
 type Filter = 'alle' | 'fit' | 'raus';
 
@@ -73,7 +82,13 @@ export default function KaderPage({ players, loading, onRefresh }: KaderPageProp
     await onRefresh();
   }
 
-  // Detail view
+  const filterTabs: { key: Filter; label: string; count: number }[] = [
+    { key: 'alle', label: 'Alle', count: players.length },
+    { key: 'fit', label: 'Fit', count: fitCount },
+    { key: 'raus', label: 'Raus', count: injuredCount },
+  ];
+
+  // Detail view with iOS-style push transition
   if (detailPlayer) {
     const current = players.find(p => p.id === detailPlayer.id);
     if (!current) {
@@ -81,127 +96,187 @@ export default function KaderPage({ players, loading, onRefresh }: KaderPageProp
       return null;
     }
     return (
-      <>
-        <PlayerDetail
-          player={current}
-          onBack={() => setDetailPlayer(null)}
-          onEdit={() => setEditPlayer(current)}
-          onDelete={() => handleDeletePlayer(current.id)}
-        />
-        {editPlayer && (
-          <AddPlayerModal
-            existingPlayer={editPlayer}
-            onSave={handleEditPlayer}
-            onClose={() => setEditPlayer(null)}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key="detail"
+          variants={pageSlideRight}
+          initial="hidden"
+          animate="show"
+          exit="exit"
+        >
+          <PlayerDetail
+            player={current}
+            onBack={() => setDetailPlayer(null)}
+            onEdit={() => setEditPlayer(current)}
+            onDelete={() => handleDeletePlayer(current.id)}
           />
-        )}
-      </>
+          <AnimatePresence>
+            {editPlayer && (
+              <AddPlayerModal
+                existingPlayer={editPlayer}
+                onSave={handleEditPlayer}
+                onClose={() => setEditPlayer(null)}
+              />
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </AnimatePresence>
     );
   }
 
   return (
-    <div className="min-h-screen bg-surface pb-24">
-      {/* Yellow header */}
-      <div className="bg-primary safe-top">
-        <div className="px-5 pt-3 pb-5">
-          <div className="flex items-start justify-between">
+    <div className="min-h-screen bg-surface-0 pb-24 scroll-container">
+      {/* ── Header ── */}
+      <div className="relative overflow-hidden safe-top">
+        {/* Animated amber gradient */}
+        <div className="absolute inset-0 animated-header-gradient" />
+        {/* Shimmer overlay */}
+        <div className="absolute inset-0 shimmer-overlay" />
+        {/* Subtle noise texture */}
+        <div className="absolute inset-0 opacity-[0.03]"
+          style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")' }}
+        />
+
+        <div className="relative px-5 pt-12 pb-8">
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            animate="show"
+            className="flex items-start justify-between"
+          >
             <div>
-              <div className="text-[11px] font-semibold text-white/80 tracking-[0.06em] uppercase leading-relaxed">
+              <div className="text-[10.5px] font-semibold text-white/70 tracking-[0.14em] uppercase">
                 {players.length} Spieler · Saison 25/26
               </div>
-              <h1 className="text-[24px] font-black text-white leading-tight">
+              <h1
+                className="text-[34px] font-[800] text-white leading-none mt-1.5 tracking-[0.04em]"
+                style={{ textShadow: '0 2px 12px rgba(0,0,0,0.15)' }}
+              >
                 KADER
               </h1>
             </div>
-            <button
+            <motion.button
               onClick={() => setShowAdd(true)}
-              className="w-9 h-9 bg-[#4cd964] hover:bg-[#3cbf54] active:bg-[#34a84a] rounded-full flex items-center justify-center transition-colors mt-1 shadow-sm"
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.92 }}
+              transition={springSnappy}
+              className="w-12 h-12 bg-white/15 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
             >
-              <Plus size={20} className="text-white" strokeWidth={2.5} />
-            </button>
-          </div>
+              <Plus size={22} className="text-white" strokeWidth={2.5} />
+            </motion.button>
+          </motion.div>
         </div>
       </div>
 
-      {/* Search */}
-      <div className="bg-surface px-4 pt-5 pb-3">
-        <div className="relative">
-          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-secondary/50" />
+      {/* ── Search ── */}
+      <motion.div
+        variants={fadeUp}
+        initial="hidden"
+        animate="show"
+        transition={{ delay: 0.1 }}
+        className="px-4 pt-5 pb-2"
+      >
+        <div className="relative glass rounded-2xl transition-shadow focus-within:shadow-[0_0_0_3px_rgba(245,197,24,0.12)]">
+          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white-muted" />
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Spieler suchen"
-            className="w-full bg-[#f2f2f7] rounded-lg pl-[38px] pr-4 py-[10px] text-[15px] text-text placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-primary/30 border border-[#e5e5ea]"
+            className="w-full bg-transparent rounded-2xl pl-10 pr-4 py-[11px] text-[14px] text-white placeholder:text-white-muted focus:outline-none transition-all"
           />
         </div>
-      </div>
+      </motion.div>
 
-      {/* Filter tabs */}
-      <div className="flex items-center px-4 pt-1 pb-3 gap-3 bg-surface">
-        {([
-          { key: 'alle' as Filter, label: 'Alle', count: players.length },
-          { key: 'fit' as Filter, label: 'Fit', count: fitCount },
-          { key: 'raus' as Filter, label: 'Raus', count: injuredCount },
-        ]).map(tab => (
+      {/* ── Filter Pills ── */}
+      <motion.div
+        variants={fadeUp}
+        initial="hidden"
+        animate="show"
+        transition={{ delay: 0.15 }}
+        className="flex items-center px-4 pt-2 pb-1 gap-2"
+      >
+        {filterTabs.map(tab => (
           <button
             key={tab.key}
             onClick={() => setFilter(tab.key)}
-            className={`py-[6px] px-4 rounded-full text-[13px] font-semibold transition-all ${
-              filter === tab.key
-                ? 'bg-surface text-text border border-[#d1d1d6] shadow-[0_1px_2px_rgba(0,0,0,0.06)]'
-                : 'text-text-secondary border border-transparent'
-            }`}
+            className="relative z-10 py-[8px] px-5 rounded-full text-[12.5px] font-semibold tracking-[0.02em] transition-colors duration-200"
           >
-            {tab.label} · {tab.count}
+            {filter === tab.key && (
+              <motion.div
+                layoutId="filter-pill"
+                className="absolute inset-0 bg-surface-3 border border-border-strong rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.3)]"
+                transition={springSnappy}
+                style={{ zIndex: -1 }}
+              />
+            )}
+            <span className={filter === tab.key ? 'text-white' : 'text-white-muted'}>
+              {tab.label} · {tab.count}
+            </span>
           </button>
         ))}
-      </div>
+      </motion.div>
 
-      {/* Loading state */}
+      {/* ── Loading ── */}
       {loading && (
-        <div className="flex justify-center py-16">
-          <Loader2 size={28} className="animate-spin text-primary" />
+        <div className="flex flex-col items-center justify-center py-20 gap-3">
+          <Loader2 size={24} className="animate-spin text-amber" />
+          <span className="text-[12px] text-white-muted tracking-wide">Lade Kader…</span>
         </div>
       )}
 
-      {/* Player list grouped by position */}
+      {/* ── Player List ── */}
       {!loading && (
-        <div className="mt-2">
+        <div className="mt-3">
           {positionGroupOrder.map(group => {
             const groupPlayers = grouped[group];
             if (groupPlayers.length === 0) return null;
             return (
-              <div key={group}>
+              <motion.div
+                key={group}
+                variants={staggerContainer}
+                initial="hidden"
+                animate="show"
+                className="mb-1"
+              >
                 {/* Section header */}
-                <div className="px-5 pt-4 pb-2 text-[11px] font-bold text-text-secondary/60 tracking-[0.1em] uppercase">
-                  {group} · {groupPlayers.length}
-                </div>
-                {/* Player rows with dividers */}
+                <motion.div variants={sectionHeader} className="flex items-center gap-2 px-5 pt-5 pb-2">
+                  <span className="text-[10.5px] font-bold text-white-muted tracking-[0.16em] uppercase">
+                    {group}
+                  </span>
+                  <span className="text-[10.5px] font-bold text-white-faint tracking-[0.16em]">
+                    · {groupPlayers.length}
+                  </span>
+                  <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent ml-1" />
+                </motion.div>
+
+                {/* Player rows */}
                 <div>
                   {groupPlayers.map((player, i) => (
-                    <div key={player.id}>
-                      {i > 0 && <div className="h-px bg-[#e5e5ea] ml-[68px]" />}
+                    <motion.div key={player.id} variants={staggerItem}>
+                      {i > 0 && <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent ml-[72px] mr-5" />}
                       <PlayerCard
                         player={player}
                         onClick={() => setDetailPlayer(player)}
                       />
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
       )}
 
       {/* Add modal */}
-      {showAdd && (
-        <AddPlayerModal
-          onSave={handleAddPlayer}
-          onClose={() => setShowAdd(false)}
-        />
-      )}
+      <AnimatePresence>
+        {showAdd && (
+          <AddPlayerModal
+            onSave={handleAddPlayer}
+            onClose={() => setShowAdd(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

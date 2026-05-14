@@ -21,13 +21,13 @@ export default function App() {
   }, [refresh]);
 
   return (
-    <div className="max-w-lg mx-auto bg-surface min-h-screen relative">
+    <div className="max-w-lg mx-auto bg-surface-0 min-h-screen relative">
       {activeTab === 'kader' && (
         <KaderPage players={players} loading={loading} onRefresh={refresh} />
       )}
       {activeTab !== 'kader' && (
-        <div className="flex items-center justify-center h-screen text-text-secondary">
-          <p className="text-lg">Kommt bald...</p>
+        <div className="flex items-center justify-center h-screen text-white-muted">
+          <p className="text-[15px] tracking-wide">Kommt bald…</p>
         </div>
       )}
       <BottomNav active={activeTab} onNavigate={setActiveTab} />

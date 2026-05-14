@@ -1,20 +1,135 @@
 @import "tailwindcss";
 
-@theme {
-  --color-primary: #f5c518;
-  --color-primary-dark: #e0b000;
-  --color-bg: #f2f2f7;
-  --color-surface: #ffffff;
-  --color-card: #ffffff;
-  --color-text: #1a1a1a;
-  --color-text-secondary: #8e8e93;
-  --color-border: #e5e5ea;
-  --color-fit: #34c759;
-  --color-injured: #ff3b30;
-  --color-nav-bg: #ffffff;
-  --font-sans: -apple-system, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+@font-face {
+  font-family: 'Geist';
+  src: url('https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/Geist-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Geist';
+  src: url('https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/Geist-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Geist';
+  src: url('https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/Geist-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Geist';
+  src: url('https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/Geist-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Geist';
+  src: url('https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/Geist-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Geist';
+  src: url('https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-sans/Geist-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
 }
 
+@theme {
+  --color-amber: #f5c518;
+  --color-amber-deep: #d4a800;
+  --color-amber-light: #ffe066;
+  --color-amber-glow: #f5c51830;
+  --color-surface-0: #0c0c0e;
+  --color-surface-1: #141416;
+  --color-surface-2: #1c1c1f;
+  --color-surface-3: #252528;
+  --color-surface-4: #2e2e32;
+  --color-white: #f5f5f7;
+  --color-white-soft: #ffffffcc;
+  --color-white-muted: #ffffff66;
+  --color-white-faint: #ffffff22;
+  --color-fit: #32d74b;
+  --color-injured: #ff453a;
+  --color-border: #ffffff12;
+  --color-border-strong: #ffffff1a;
+  --color-glass: rgba(20, 20, 22, 0.72);
+  --color-glass-border: rgba(255, 255, 255, 0.08);
+  --font-sans: 'Geist', -apple-system, system-ui, sans-serif;
+}
+
+/* Animatable CSS properties for gradient effects */
+@property --header-angle {
+  syntax: '<angle>';
+  initial-value: 180deg;
+  inherits: false;
+}
+
+@property --shimmer-x {
+  syntax: '<percentage>';
+  initial-value: -100%;
+  inherits: false;
+}
+
+/* Keyframes */
+@keyframes shimmer {
+  0% { --shimmer-x: -100%; }
+  100% { --shimmer-x: 200%; }
+}
+
+@keyframes header-gradient-rotate {
+  0% { --header-angle: 160deg; }
+  50% { --header-angle: 200deg; }
+  100% { --header-angle: 160deg; }
+}
+
+@keyframes pulse-injured {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--color-injured); }
+  50% { opacity: 0.7; box-shadow: 0 0 6px 2px rgba(255, 69, 58, 0.35); }
+}
+
+@keyframes float-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Utility classes */
+.glass {
+  background: var(--color-glass);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.shimmer-overlay {
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 60%
+  );
+  background-size: 200% 100%;
+  background-position-x: var(--shimmer-x);
+  animation: shimmer 4s ease-in-out infinite;
+}
+
+.animated-header-gradient {
+  background: linear-gradient(
+    var(--header-angle),
+    #ffe066 0%,
+    #f5c518 40%,
+    #d4a800 100%
+  );
+  animation: header-gradient-rotate 8s ease-in-out infinite;
+}
+
+.status-dot-injured {
+  animation: pulse-injured 2.4s ease-in-out infinite;
+}
+
+/* Global styles */
 * {
   margin: 0;
   padding: 0;
@@ -24,9 +139,11 @@
 
 html, body, #root {
   height: 100%;
-  background: var(--color-bg);
-  color: var(--color-text);
+  background: var(--color-surface-0);
+  color: var(--color-white);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -38,9 +155,16 @@ body {
 input, textarea, select {
   user-select: text;
   -webkit-user-select: text;
+  font-family: inherit;
 }
 
 @supports (padding-top: env(safe-area-inset-top)) {
   .safe-top { padding-top: env(safe-area-inset-top); }
   .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 }
+
+.scroll-container {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.scroll-container::-webkit-scrollbar { display: none; }

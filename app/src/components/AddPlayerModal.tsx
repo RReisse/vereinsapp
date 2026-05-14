@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
+import { motion } from 'motion/react';
 import type { Player, Position } from '../types';
 import { allPositions } from '../types';
+import { fadeBackdrop, slideUp, springSnappy } from '../lib/motion';
 
 interface AddPlayerModalProps {
   onClose: () => void;
@@ -40,37 +42,61 @@ export default function AddPlayerModal({ onClose, onSave, existingPlayer }: AddP
     });
   }
 
-  const inputClass = "w-full bg-bg border border-border rounded-xl px-3.5 py-2.5 text-[15px] text-text placeholder:text-text-secondary/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30";
+  const inputClass = "w-full bg-surface-2 border border-border-strong rounded-xl px-3.5 py-3 text-[14px] text-white placeholder:text-white-muted focus:outline-none focus:border-amber/40 focus:ring-1 focus:ring-amber-glow transition-all";
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-end justify-center" onClick={onClose}>
-      <div
-        className="bg-surface w-full max-w-lg rounded-t-2xl max-h-[90vh] overflow-y-auto"
+    <motion.div
+      variants={fadeBackdrop}
+      initial="hidden"
+      animate="show"
+      exit="exit"
+      className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-end justify-center"
+      onClick={onClose}
+    >
+      <motion.div
+        variants={slideUp}
+        initial="hidden"
+        animate="show"
+        exit="exit"
+        drag="y"
+        dragConstraints={{ top: 0 }}
+        dragElastic={0.2}
+        onDragEnd={(_, info) => { if (info.offset.y > 100) onClose(); }}
+        className="bg-surface-1 w-full max-w-lg rounded-t-[20px] max-h-[90vh] overflow-y-auto border-t border-border-strong"
         onClick={e => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border sticky top-0 bg-surface rounded-t-2xl z-10">
-          <h2 className="text-[17px] font-bold text-text">
+        {/* Drag handle */}
+        <div className="flex justify-center pt-3 pb-1">
+          <div className="w-10 h-1 bg-white/20 rounded-full" />
+        </div>
+
+        <div className="flex items-center justify-between px-4 pb-3 border-b border-border sticky top-0 bg-surface-1/95 backdrop-blur-sm z-10">
+          <h2 className="text-[17px] font-bold text-white">
             {existingPlayer ? 'Spieler bearbeiten' : 'Neuer Spieler'}
           </h2>
-          <button onClick={onClose} className="p-1.5 hover:bg-bg rounded-full transition-colors">
-            <X size={20} className="text-text-secondary" />
-          </button>
+          <motion.button
+            onClick={onClose}
+            whileTap={{ scale: 0.9 }}
+            transition={springSnappy}
+            className="p-1.5 hover:bg-surface-3 rounded-full transition-colors"
+          >
+            <X size={20} className="text-white-muted" />
+          </motion.button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           <div>
-            <label className="block text-[13px] font-medium text-text-secondary mb-1.5">Name *</label>
+            <label className="block text-[12px] font-semibold text-white-muted mb-1.5 tracking-[0.04em] uppercase">Name *</label>
             <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Vor- und Nachname" className={inputClass} />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-1.5">Nummer *</label>
+              <label className="block text-[12px] font-semibold text-white-muted mb-1.5 tracking-[0.04em] uppercase">Nummer *</label>
               <input type="number" value={number} onChange={e => setNumber(e.target.value)} placeholder="1-99" min="1" max="99" className={inputClass} />
             </div>
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-1.5">Position *</label>
+              <label className="block text-[12px] font-semibold text-white-muted mb-1.5 tracking-[0.04em] uppercase">Position *</label>
               <select value={position} onChange={e => setPosition(e.target.value as Position)} className={inputClass + " appearance-none"}>
                 {allPositions.map(p => <option key={p} value={p}>{p}</option>)}
               </select>
@@ -78,30 +104,30 @@ export default function AddPlayerModal({ onClose, onSave, existingPlayer }: AddP
           </div>
 
           <div>
-            <label className="block text-[13px] font-medium text-text-secondary mb-1.5">Alter *</label>
+            <label className="block text-[12px] font-semibold text-white-muted mb-1.5 tracking-[0.04em] uppercase">Alter *</label>
             <input type="number" value={age} onChange={e => setAge(e.target.value)} placeholder="Alter" min="14" max="50" className={inputClass} />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-1.5">Spiele</label>
+              <label className="block text-[12px] font-semibold text-white-muted mb-1.5 tracking-[0.04em] uppercase">Spiele</label>
               <input type="number" value={games} onChange={e => setGames(e.target.value)} min="0" className={inputClass} />
             </div>
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-1.5">Tore</label>
+              <label className="block text-[12px] font-semibold text-white-muted mb-1.5 tracking-[0.04em] uppercase">Tore</label>
               <input type="number" value={goals} onChange={e => setGoals(e.target.value)} min="0" className={inputClass} />
             </div>
           </div>
 
           <div>
-            <label className="block text-[13px] font-medium text-text-secondary mb-1.5">Status</label>
+            <label className="block text-[12px] font-semibold text-white-muted mb-1.5 tracking-[0.04em] uppercase">Status</label>
             <div className="flex gap-2">
               <button type="button" onClick={() => setStatus('fit')}
-                className={`flex-1 py-2.5 rounded-xl text-[14px] font-semibold transition-all ${status === 'fit' ? 'bg-fit/10 text-fit border-2 border-fit' : 'bg-bg border border-border text-text-secondary'}`}>
+                className={`flex-1 py-2.5 rounded-xl text-[13px] font-semibold transition-all ${status === 'fit' ? 'bg-fit/15 text-fit border border-fit/40' : 'bg-surface-2 border border-border-strong text-white-muted'}`}>
                 Fit
               </button>
               <button type="button" onClick={() => setStatus('verletzt')}
-                className={`flex-1 py-2.5 rounded-xl text-[14px] font-semibold transition-all ${status === 'verletzt' ? 'bg-injured/10 text-injured border-2 border-injured' : 'bg-bg border border-border text-text-secondary'}`}>
+                className={`flex-1 py-2.5 rounded-xl text-[13px] font-semibold transition-all ${status === 'verletzt' ? 'bg-injured/15 text-injured border border-injured/40' : 'bg-surface-2 border border-border-strong text-white-muted'}`}>
                 Verletzt
               </button>
             </div>
@@ -109,17 +135,22 @@ export default function AddPlayerModal({ onClose, onSave, existingPlayer }: AddP
 
           {status === 'verletzt' && (
             <div>
-              <label className="block text-[13px] font-medium text-text-secondary mb-1.5">Verletzung</label>
+              <label className="block text-[12px] font-semibold text-white-muted mb-1.5 tracking-[0.04em] uppercase">Verletzung</label>
               <input type="text" value={injury} onChange={e => setInjury(e.target.value)} placeholder="z.B. Muskelfaserriss · 2 Wochen" className={inputClass} />
             </div>
           )}
 
-          <button type="submit" disabled={!isValid || saving}
-            className="w-full bg-primary text-white font-bold py-3 rounded-xl text-[15px] transition-colors hover:bg-primary-dark active:bg-primary-dark disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
-            {saving ? 'Speichern...' : existingPlayer ? 'Speichern' : 'Spieler hinzufügen'}
-          </button>
+          <motion.button
+            type="submit"
+            disabled={!isValid || saving}
+            whileTap={{ scale: 0.97 }}
+            className="relative w-full overflow-hidden bg-gradient-to-r from-amber to-amber-deep text-surface-0 font-bold py-3.5 rounded-xl text-[14px] tracking-[0.02em] transition-all hover:shadow-[0_4px_16px_rgba(245,197,24,0.3)] active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <div className="absolute inset-0 shimmer-overlay" />
+            <span className="relative">{saving ? 'Speichern…' : existingPlayer ? 'Speichern' : 'Spieler hinzufügen'}</span>
+          </motion.button>
         </form>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
