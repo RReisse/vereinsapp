@@ -15,19 +15,19 @@ interface BottomNavProps {
 
 export default function BottomNav({ active, onNavigate }: BottomNavProps) {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-nav-bg border-t border-border safe-bottom z-50">
-      <div className="flex justify-around items-center h-[52px] max-w-lg mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-[#e5e5ea] safe-bottom z-50">
+      <div className="flex justify-around items-center h-[50px] max-w-lg mx-auto">
         {tabs.map(({ id, label, icon: Icon }) => {
           const isActive = active === id;
           return (
             <button
               key={id}
               onClick={() => onNavigate(id)}
-              className={`flex flex-col items-center gap-[2px] py-1 px-3 transition-colors ${
-                isActive ? 'text-primary-dark' : 'text-text-secondary'
+              className={`flex flex-col items-center gap-[1px] py-1 px-2 transition-colors ${
+                isActive ? 'text-[#e0b000]' : 'text-[#8e8e93]'
               }`}
             >
-              <Icon size={20} strokeWidth={isActive ? 2.2 : 1.5} />
+              <Icon size={22} strokeWidth={isActive ? 2 : 1.5} />
               <span className="text-[10px] font-medium">{label}</span>
             </button>
           );

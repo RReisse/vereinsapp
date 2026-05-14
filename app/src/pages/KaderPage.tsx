@@ -103,98 +103,97 @@ export default function KaderPage({ players, loading, onRefresh }: KaderPageProp
     <div className="min-h-screen bg-surface pb-24">
       {/* Yellow header */}
       <div className="bg-primary safe-top">
-        <div className="px-5 pt-10 pb-12">
+        <div className="px-5 pt-3 pb-5">
           <div className="flex items-start justify-between">
             <div>
-              <div className="text-[11px] font-semibold text-white/75 tracking-[0.08em] uppercase">
+              <div className="text-[11px] font-semibold text-white/80 tracking-[0.06em] uppercase leading-relaxed">
                 {players.length} Spieler · Saison 25/26
               </div>
-              <h1 className="text-[26px] font-black text-white leading-tight mt-0.5">
+              <h1 className="text-[24px] font-black text-white leading-tight">
                 KADER
               </h1>
             </div>
             <button
               onClick={() => setShowAdd(true)}
-              className="w-10 h-10 bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-full flex items-center justify-center transition-colors mt-1"
+              className="w-9 h-9 bg-[#4cd964] hover:bg-[#3cbf54] active:bg-[#34a84a] rounded-full flex items-center justify-center transition-colors mt-1 shadow-sm"
             >
-              <Plus size={22} className="text-white" strokeWidth={2.5} />
+              <Plus size={20} className="text-white" strokeWidth={2.5} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Content area overlapping header */}
-      <div className="bg-surface -mt-5 rounded-t-[20px] relative z-10">
-        {/* Search */}
-        <div className="px-5 pt-5 pb-3">
-          <div className="relative">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-secondary/50" />
-            <input
-              type="text"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Spieler suchen"
-              className="w-full bg-bg rounded-xl pl-10 pr-4 py-2.5 text-[15px] text-text placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-primary/40 border-none"
-            />
-          </div>
+      {/* Search */}
+      <div className="bg-surface px-4 pt-5 pb-3">
+        <div className="relative">
+          <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-secondary/50" />
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Spieler suchen"
+            className="w-full bg-[#f2f2f7] rounded-lg pl-[38px] pr-4 py-[10px] text-[15px] text-text placeholder:text-text-secondary/60 focus:outline-none focus:ring-2 focus:ring-primary/30 border border-[#e5e5ea]"
+          />
         </div>
+      </div>
 
-        {/* Filter tabs */}
-        <div className="flex px-5 gap-1 mb-4">
-          {([
-            { key: 'alle' as Filter, label: 'Alle', count: players.length },
-            { key: 'fit' as Filter, label: 'Fit', count: fitCount },
-            { key: 'raus' as Filter, label: 'Raus', count: injuredCount },
-          ]).map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => setFilter(tab.key)}
-              className={`flex-1 py-2 rounded-full text-[13px] font-semibold transition-all ${
-                filter === tab.key
-                  ? 'bg-bg text-text shadow-sm'
-                  : 'text-text-secondary'
-              }`}
-            >
-              {tab.label} · {tab.count}
-            </button>
-          ))}
+      {/* Filter tabs */}
+      <div className="flex items-center px-4 pt-1 pb-3 gap-3 bg-surface">
+        {([
+          { key: 'alle' as Filter, label: 'Alle', count: players.length },
+          { key: 'fit' as Filter, label: 'Fit', count: fitCount },
+          { key: 'raus' as Filter, label: 'Raus', count: injuredCount },
+        ]).map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setFilter(tab.key)}
+            className={`py-[6px] px-4 rounded-full text-[13px] font-semibold transition-all ${
+              filter === tab.key
+                ? 'bg-surface text-text border border-[#d1d1d6] shadow-[0_1px_2px_rgba(0,0,0,0.06)]'
+                : 'text-text-secondary border border-transparent'
+            }`}
+          >
+            {tab.label} · {tab.count}
+          </button>
+        ))}
+      </div>
+
+      {/* Loading state */}
+      {loading && (
+        <div className="flex justify-center py-16">
+          <Loader2 size={28} className="animate-spin text-primary" />
         </div>
+      )}
 
-        {/* Loading state */}
-        {loading && (
-          <div className="flex justify-center py-12">
-            <Loader2 size={28} className="animate-spin text-primary" />
-          </div>
-        )}
-
-        {/* Player list grouped by position */}
-        {!loading && (
-          <div>
-            {positionGroupOrder.map(group => {
-              const groupPlayers = grouped[group];
-              if (groupPlayers.length === 0) return null;
-              return (
-                <div key={group} className="mb-2">
-                  <div className="px-5 py-2 text-[11px] font-bold text-text-secondary/70 tracking-[0.1em] uppercase">
-                    {group} · {groupPlayers.length}
-                  </div>
-                  <div>
-                    {groupPlayers.map((player, i) => (
-                      <div key={player.id}>
-                        {i > 0 && <div className="h-px bg-border ml-[72px] mr-5" />}
-                        <PlayerCard
-                          player={player}
-                          onClick={() => setDetailPlayer(player)}
-                        />
-                      </div>
-                    ))}
-                  </div>
+      {/* Player list grouped by position */}
+      {!loading && (
+        <div className="mt-2">
+          {positionGroupOrder.map(group => {
+            const groupPlayers = grouped[group];
+            if (groupPlayers.length === 0) return null;
+            return (
+              <div key={group}>
+                {/* Section header */}
+                <div className="px-5 pt-4 pb-2 text-[11px] font-bold text-text-secondary/60 tracking-[0.1em] uppercase">
+                  {group} · {groupPlayers.length}
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
+                {/* Player rows with dividers */}
+                <div>
+                  {groupPlayers.map((player, i) => (
+                    <div key={player.id}>
+                      {i > 0 && <div className="h-px bg-[#e5e5ea] ml-[68px]" />}
+                      <PlayerCard
+                        player={player}
+                        onClick={() => setDetailPlayer(player)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Add modal */}
       {showAdd && (
