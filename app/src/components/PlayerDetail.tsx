@@ -92,12 +92,12 @@ export default function PlayerDetail({ player, onBack, onEdit, onDelete }: Playe
             <div className="flex items-center gap-2 mt-1.5">
               <span className="text-white/70 font-medium text-[14px]">{player.position}</span>
               <span
-                className={`w-[8px] h-[8px] rounded-full ring-2 ${
+                className={`w-[8px] h-[8px] rounded-full ${
                   player.status === 'verletzt' ? 'status-dot-injured' : ''
                 }`}
                 style={{
                   backgroundColor: player.status === 'fit' ? 'var(--color-fit)' : 'var(--color-injured)',
-                  ringColor: player.status === 'fit' ? '#32d74b33' : '#ff453a33',
+                  boxShadow: player.status === 'fit' ? '0 0 0 2px #32d74b33' : '0 0 0 2px #ff453a33',
                 }}
               />
               <span className="text-white/60 text-[13px]">

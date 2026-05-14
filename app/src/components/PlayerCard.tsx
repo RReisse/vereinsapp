@@ -25,12 +25,12 @@ export default function PlayerCard({ player, onClick }: PlayerCardProps) {
             {player.name}
           </span>
           <span
-            className={`w-[7px] h-[7px] rounded-full shrink-0 ring-2 ${
+            className={`w-[7px] h-[7px] rounded-full shrink-0 ${
               player.status === 'verletzt' ? 'status-dot-injured' : ''
             }`}
             style={{
               backgroundColor: player.status === 'fit' ? 'var(--color-fit)' : 'var(--color-injured)',
-              ringColor: player.status === 'fit' ? '#32d74b33' : '#ff453a33',
+              boxShadow: player.status === 'fit' ? '0 0 0 2px #32d74b33' : '0 0 0 2px #ff453a33',
             }}
           />
         </div>
