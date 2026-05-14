@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #f5c518;
+  --color-primary-dark: #e0b000;
+  --color-bg: #f2f2f7;
+  --color-surface: #ffffff;
+  --color-card: #ffffff;
+  --color-text: #1a1a1a;
+  --color-text-secondary: #8e8e93;
+  --color-border: #e5e5ea;
+  --color-fit: #34c759;
+  --color-injured: #ff3b30;
+  --color-nav-bg: #ffffff;
+  --font-sans: -apple-system, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body, #root {
+  height: 100%;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+body {
+  overscroll-behavior: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+input, textarea, select {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+@supports (padding-top: env(safe-area-inset-top)) {
+  .safe-top { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+}
